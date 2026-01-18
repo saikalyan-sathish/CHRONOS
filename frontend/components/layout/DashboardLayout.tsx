@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 import Sidebar from './Sidebar';
 import { useAuthStore, useUIStore, useNotificationStore, useCalendarStore, useFocusStore } from '@/store/useStore';
 import { notificationsAPI, focusAPI } from '@/lib/api';
+import { useUndoRedo } from '@/hooks/useUndoRedo';
+import { ArrowUturnLeftIcon, ArrowUturnRightIcon } from '@heroicons/react/24/outline';
 
 let socket: Socket | null = null;
 
@@ -23,6 +25,15 @@ export default function DashboardLayout({
   const { addEvent, updateEvent, removeEvent } = useCalendarStore();
   const { setActiveSession } = useFocusStore();
   const [loading, setLoading] = useState(true);
+
+  const {
+    executeUndo,
+    executeRedo,
+    canUndo,
+    canRedo,
+    undoDescription,
+    redoDescription,
+  } = useUndoRedo();
 
   useEffect(() => {
     if (!isAuthenticated || !token) {
@@ -128,10 +139,37 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900">
       <Sidebar />
       <main
-        className={`transition-all duration-300 min-h-screen ${
-          sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[80px]'
-        }`}
+        className={`transition-all duration-300 min-h-screen ${sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[80px]'
+          }`}
       >
+        {/* Undo/Redo Toolbar */}
+        <div className="fixed top-4 right-4 z-40 flex items-center gap-1 bg-white dark:bg-dark-800 rounded-lg shadow-lg p-1">
+          <button
+            onClick={executeUndo}
+            disabled={!canUndo}
+            className={`p-2 rounded-lg transition-all ${canUndo
+                ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
+                : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              }`}
+            title={undoDescription ? `Undo: ${undoDescription}` : 'Undo (Ctrl+Z)'}
+            aria-label="Undo"
+          >
+            <ArrowUturnLeftIcon className="w-5 h-5" />
+          </button>
+          <button
+            onClick={executeRedo}
+            disabled={!canRedo}
+            className={`p-2 rounded-lg transition-all ${canRedo
+                ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
+                : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              }`}
+            title={redoDescription ? `Redo: ${redoDescription}` : 'Redo (Ctrl+Shift+Z)'}
+            aria-label="Redo"
+          >
+            <ArrowUturnRightIcon className="w-5 h-5" />
+          </button>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

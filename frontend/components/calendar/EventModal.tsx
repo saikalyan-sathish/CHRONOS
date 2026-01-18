@@ -13,11 +13,15 @@ import {
   TagIcon,
   TrashIcon,
   DocumentDuplicateIcon,
+  BookmarkIcon,
+  RectangleStackIcon,
 } from '@heroicons/react/24/outline';
-import { eventsAPI, calendarsAPI } from '@/lib/api';
+import { eventsAPI, calendarsAPI, templatesAPI } from '@/lib/api';
 import { useCalendarStore } from '@/store/useStore';
-import type { Event, Calendar } from '@/types';
+import type { Event, Calendar, EventTemplate } from '@/types';
 import toast from 'react-hot-toast';
+import TemplateManager from '@/components/templates/TemplateManager';
+import TemplateModal from '@/components/templates/TemplateModal';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -62,6 +66,8 @@ export default function EventModal({
   const { calendars, setCalendars, addEvent, updateEvent, removeEvent } = useCalendarStore();
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -229,281 +235,354 @@ export default function EventModal({
     }
   };
 
+  const handleSelectTemplate = (template: EventTemplate) => {
+    setTitle(template.title);
+    setDescription(template.description || '');
+    setLocation(template.location || '');
+    setColor(template.color);
+    setPriority(template.priority);
+    if (template.reminders && template.reminders.length > 0) {
+      setReminderTime(template.reminders[0]);
+    }
+    // Calculate end time based on template duration
+    if (startDate && startTime) {
+      const start = new Date(`${startDate}T${startTime}`);
+      const end = new Date(start.getTime() + template.duration * 60000);
+      setEndDate(format(end, 'yyyy-MM-dd'));
+      setEndTime(format(end, 'HH:mm'));
+    }
+    setShowTemplateManager(false);
+  };
+
+  const getCurrentEventData = () => ({
+    title,
+    description,
+    location,
+    duration: (() => {
+      if (startDate && startTime && endDate && endTime) {
+        const start = new Date(`${startDate}T${startTime}`);
+        const end = new Date(`${endDate}T${endTime}`);
+        return Math.round((end.getTime() - start.getTime()) / 60000);
+      }
+      return 60;
+    })(),
+    color,
+    priority,
+    reminders: [reminderTime],
+  });
+
   return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-        </Transition.Child>
+    <>
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={onClose}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+          </Transition.Child>
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-dark-800 shadow-xl transition-all">
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-dark-700">
-                  <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {event ? 'Edit Event' : 'New Event'}
-                  </Dialog.Title>
-                  <div className="flex items-center gap-2">
-                    {event && (
-                      <>
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-dark-800 shadow-xl transition-all">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-dark-700">
+                    <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {event ? 'Edit Event' : 'New Event'}
+                    </Dialog.Title>
+                    <div className="flex items-center gap-2">
+                      {!event && (
                         <button
-                          onClick={handleDuplicate}
+                          onClick={() => setShowTemplateManager(true)}
                           className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
-                          title="Duplicate"
+                          title="Use Template"
                         >
-                          <DocumentDuplicateIcon className="w-5 h-5 text-gray-500" />
+                          <RectangleStackIcon className="w-5 h-5 text-gray-500" />
                         </button>
+                      )}
+                      {title && (
                         <button
-                          onClick={handleDelete}
-                          disabled={deleting}
-                          className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                          title="Delete"
+                          onClick={() => setShowSaveTemplate(true)}
+                          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+                          title="Save as Template"
                         >
-                          <TrashIcon className="w-5 h-5 text-red-500" />
+                          <BookmarkIcon className="w-5 h-5 text-gray-500" />
                         </button>
-                      </>
-                    )}
-                    <button
-                      onClick={onClose}
-                      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
-                    >
-                      <XMarkIcon className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                  {/* Title */}
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Event title"
-                    className="w-full text-xl font-semibold border-none focus:ring-0 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent text-gray-900 dark:text-white"
-                    autoFocus
-                  />
-
-                  {/* Date & Time */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <ClockIcon className="w-5 h-5 text-gray-400" />
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={allDay}
-                          onChange={(e) => setAllDay(e.target.checked)}
-                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                        />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">All day</span>
-                      </label>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 pl-8">
-                      <div>
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          Start
-                        </label>
-                        <input
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          className="input text-sm"
-                          required
-                        />
-                        {!allDay && (
-                          <input
-                            type="time"
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                            className="input text-sm mt-2"
-                            required
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          End
-                        </label>
-                        <input
-                          type="date"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                          className="input text-sm"
-                          required
-                        />
-                        {!allDay && (
-                          <input
-                            type="time"
-                            value={endTime}
-                            onChange={(e) => setEndTime(e.target.value)}
-                            className="input text-sm mt-2"
-                            required
-                          />
-                        )}
-                      </div>
+                      )}
+                      {event && (
+                        <>
+                          <button
+                            onClick={handleDuplicate}
+                            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+                            title="Duplicate"
+                          >
+                            <DocumentDuplicateIcon className="w-5 h-5 text-gray-500" />
+                          </button>
+                          <button
+                            onClick={handleDelete}
+                            disabled={deleting}
+                            className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            title="Delete"
+                          >
+                            <TrashIcon className="w-5 h-5 text-red-500" />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={onClose}
+                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+                      >
+                        <XMarkIcon className="w-5 h-5 text-gray-500" />
+                      </button>
                     </div>
                   </div>
 
-                  {/* Location */}
-                  <div className="flex items-center gap-3">
-                    <MapPinIcon className="w-5 h-5 text-gray-400" />
+                  {/* Form */}
+                  <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    {/* Title */}
                     <input
                       type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Add location"
-                      className="flex-1 input"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Event title"
+                      className="w-full text-xl font-semibold border-none focus:ring-0 placeholder-gray-400 dark:placeholder-gray-500 bg-transparent text-gray-900 dark:text-white"
+                      autoFocus
                     />
-                  </div>
 
-                  {/* Description */}
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Add description"
-                    rows={3}
-                    className="input resize-none"
-                  />
+                    {/* Date & Time */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <ClockIcon className="w-5 h-5 text-gray-400" />
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={allDay}
+                            onChange={(e) => setAllDay(e.target.checked)}
+                            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          />
+                          <span className="text-sm text-gray-600 dark:text-gray-400">All day</span>
+                        </label>
+                      </div>
 
-                  {/* Calendar & Color */}
-                  <div className="flex items-center gap-3">
-                    <CalendarIcon className="w-5 h-5 text-gray-400" />
-                    <select
-                      value={calendarId}
-                      onChange={(e) => setCalendarId(e.target.value)}
-                      className="flex-1 input"
-                    >
-                      {calendars.map((cal) => (
-                        <option key={cal._id} value={cal._id}>
-                          {cal.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Color picker */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full" style={{ backgroundColor: color }} />
-                    <div className="flex gap-2">
-                      {colorOptions.map((c) => (
-                        <motion.button
-                          key={c}
-                          type="button"
-                          whileHover={{ scale: 1.2 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => setColor(c)}
-                          className={`w-6 h-6 rounded-full transition-all ${
-                            color === c ? 'ring-2 ring-offset-2 ring-gray-400' : ''
-                          }`}
-                          style={{ backgroundColor: c }}
-                        />
-                      ))}
+                      <div className="grid grid-cols-2 gap-3 pl-8">
+                        <div>
+                          <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            Start
+                          </label>
+                          <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="input text-sm"
+                            required
+                          />
+                          {!allDay && (
+                            <input
+                              type="time"
+                              value={startTime}
+                              onChange={(e) => setStartTime(e.target.value)}
+                              className="input text-sm mt-2"
+                              required
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            End
+                          </label>
+                          <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="input text-sm"
+                            required
+                          />
+                          {!allDay && (
+                            <input
+                              type="time"
+                              value={endTime}
+                              onChange={(e) => setEndTime(e.target.value)}
+                              className="input text-sm mt-2"
+                              required
+                            />
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Priority */}
-                  <div className="flex items-center gap-3">
-                    <TagIcon className="w-5 h-5 text-gray-400" />
-                    <div className="flex gap-2">
-                      {priorityOptions.map((p) => (
-                        <button
-                          key={p.value}
-                          type="button"
-                          onClick={() => setPriority(p.value)}
-                          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                            priority === p.value
+                    {/* Location */}
+                    <div className="flex items-center gap-3">
+                      <MapPinIcon className="w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        placeholder="Add location"
+                        className="flex-1 input"
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Add description"
+                      rows={3}
+                      className="input resize-none"
+                    />
+
+                    {/* Calendar & Color */}
+                    <div className="flex items-center gap-3">
+                      <CalendarIcon className="w-5 h-5 text-gray-400" />
+                      <select
+                        value={calendarId}
+                        onChange={(e) => setCalendarId(e.target.value)}
+                        className="flex-1 input"
+                      >
+                        {calendars.map((cal) => (
+                          <option key={cal._id} value={cal._id}>
+                            {cal.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Color picker */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full" style={{ backgroundColor: color }} />
+                      <div className="flex gap-2">
+                        {colorOptions.map((c) => (
+                          <motion.button
+                            key={c}
+                            type="button"
+                            whileHover={{ scale: 1.2 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setColor(c)}
+                            className={`w-6 h-6 rounded-full transition-all ${color === c ? 'ring-2 ring-offset-2 ring-gray-400' : ''
+                              }`}
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Priority */}
+                    <div className="flex items-center gap-3">
+                      <TagIcon className="w-5 h-5 text-gray-400" />
+                      <div className="flex gap-2">
+                        {priorityOptions.map((p) => (
+                          <button
+                            key={p.value}
+                            type="button"
+                            onClick={() => setPriority(p.value)}
+                            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${priority === p.value
                               ? `bg-gray-900 dark:bg-white text-white dark:text-gray-900`
                               : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400'
-                          }`}
-                        >
-                          {p.label}
-                        </button>
-                      ))}
+                              }`}
+                          >
+                            {p.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Reminder */}
-                  <div className="flex items-center gap-3">
-                    <BellIcon className="w-5 h-5 text-gray-400" />
-                    <select
-                      value={reminderTime}
-                      onChange={(e) => setReminderTime(Number(e.target.value))}
-                      className="input"
-                    >
-                      {reminderOptions.map((r) => (
-                        <option key={r.value} value={r.value}>
-                          {r.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    {/* Reminder */}
+                    <div className="flex items-center gap-3">
+                      <BellIcon className="w-5 h-5 text-gray-400" />
+                      <select
+                        value={reminderTime}
+                        onChange={(e) => setReminderTime(Number(e.target.value))}
+                        className="input"
+                      >
+                        {reminderOptions.map((r) => (
+                          <option key={r.value} value={r.value}>
+                            {r.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                  {/* Tags */}
-                  <div className="flex items-center gap-3">
-                    <TagIcon className="w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      value={tags}
-                      onChange={(e) => setTags(e.target.value)}
-                      placeholder="Tags (comma separated)"
-                      className="flex-1 input"
-                    />
-                  </div>
+                    {/* Tags */}
+                    <div className="flex items-center gap-3">
+                      <TagIcon className="w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                        placeholder="Tags (comma separated)"
+                        className="flex-1 input"
+                      />
+                    </div>
 
-                  {/* Actions */}
-                  <div className="flex justify-end gap-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="btn btn-secondary"
-                    >
-                      Cancel
-                    </button>
-                    <motion.button
-                      type="submit"
-                      disabled={loading}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="btn btn-primary"
-                    >
-                      {loading ? (
-                        <motion.div
-                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        />
-                      ) : event ? (
-                        'Update Event'
-                      ) : (
-                        'Create Event'
-                      )}
-                    </motion.button>
-                  </div>
-                </form>
-              </Dialog.Panel>
-            </Transition.Child>
+                    {/* Actions */}
+                    <div className="flex justify-end gap-3 pt-4">
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="btn btn-secondary"
+                      >
+                        Cancel
+                      </button>
+                      <motion.button
+                        type="submit"
+                        disabled={loading}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="btn btn-primary"
+                      >
+                        {loading ? (
+                          <motion.div
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          />
+                        ) : event ? (
+                          'Update Event'
+                        ) : (
+                          'Create Event'
+                        )}
+                      </motion.button>
+                    </div>
+                  </form>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
           </div>
-        </div>
-      </Dialog>
-    </Transition>
+        </Dialog>
+      </Transition>
+
+      {/* Template Manager Modal */}
+      <TemplateManager
+        isOpen={showTemplateManager}
+        onClose={() => setShowTemplateManager(false)}
+        onSelectTemplate={handleSelectTemplate}
+        onCreateTemplate={() => {
+          setShowTemplateManager(false);
+          setShowSaveTemplate(true);
+        }}
+      />
+
+      {/* Save as Template Modal */}
+      <TemplateModal
+        isOpen={showSaveTemplate}
+        onClose={() => setShowSaveTemplate(false)}
+        eventData={getCurrentEventData()}
+        onSave={() => setShowSaveTemplate(false)}
+      />
+    </>
   );
 }

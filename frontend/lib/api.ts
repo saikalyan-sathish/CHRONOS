@@ -181,4 +181,38 @@ export const focusAPI = {
     api.post(`/focus/sessions/${id}/distraction`, { note }),
 };
 
+// Templates API
+export const templatesAPI = {
+  getTemplates: (params?: { sort?: string; order?: string; limit?: number }) =>
+    api.get('/templates', { params }),
+
+  getMostUsed: (limit?: number) =>
+    api.get('/templates/most-used', { params: { limit } }),
+
+  getTemplate: (id: string) => api.get(`/templates/${id}`),
+
+  createTemplate: (data: {
+    name: string;
+    title: string;
+    description?: string;
+    location?: string;
+    duration?: number;
+    color?: string;
+    category?: string;
+    priority?: string;
+    recurrence?: any;
+    reminders?: number[];
+    isDefault?: boolean;
+  }) => api.post('/templates', data),
+
+  updateTemplate: (id: string, data: any) => api.put(`/templates/${id}`, data),
+
+  deleteTemplate: (id: string) => api.delete(`/templates/${id}`),
+
+  useTemplate: (id: string) => api.post(`/templates/${id}/use`),
+
+  createFromEvent: (name: string, eventId: string) =>
+    api.post('/templates/from-event', { name, eventId }),
+};
+
 export default api;

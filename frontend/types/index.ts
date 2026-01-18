@@ -24,6 +24,16 @@ export interface UserPreferences {
     push: boolean;
     reminderTime: number;
   };
+  accessibility?: AccessibilityPreferences;
+}
+
+export interface AccessibilityPreferences {
+  highContrastMode: boolean;
+  reducedMotion: boolean;
+  screenReaderOptimized: boolean;
+  keyboardNavigation: boolean;
+  fontSize: 'small' | 'medium' | 'large' | 'xlarge';
+  focusIndicators: 'default' | 'enhanced';
 }
 
 export interface FocusStats {
@@ -220,3 +230,26 @@ export interface ProductivityScore {
 }
 
 export type CalendarView = 'day' | 'week' | 'month' | 'agenda';
+
+export interface EventTemplate {
+  _id: string;
+  user: string;
+  name: string;
+  title: string;
+  description?: string;
+  location?: string;
+  duration: number;
+  color: string;
+  category: 'work' | 'personal' | 'health' | 'social' | 'other';
+  priority: 'low' | 'medium' | 'high';
+  recurrence?: {
+    pattern: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+    interval: number;
+    daysOfWeek?: number[];
+  };
+  reminders?: number[];
+  isDefault: boolean;
+  usageCount: number;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -13,6 +13,7 @@ const calendarRoutes = require('./routes/calendars');
 const notificationRoutes = require('./routes/notifications');
 const analyticsRoutes = require('./routes/analytics');
 const focusRoutes = require('./routes/focus');
+const templateRoutes = require('./routes/templates');
 
 const { checkUpcomingEvents } = require('./services/notificationService');
 
@@ -50,6 +51,7 @@ app.use('/api/calendars', calendarRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/focus', focusRoutes);
+app.use('/api/templates', templateRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
