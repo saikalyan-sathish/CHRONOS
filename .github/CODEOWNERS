@@ -1,0 +1,16 @@
+# CODEOWNERS - Defines who must review and approve PRs
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# All files require approval from the owner
+* @saikalyan-sathish
+
+# Backend code
+/backend/ @saikalyan-sathish
+
+# Frontend code  
+/frontend/ @saikalyan-sathish
+
+# Configuration files
+*.json @saikalyan-sathish
+*.js @saikalyan-sathish
+*.ts @saikalyan-sathish
