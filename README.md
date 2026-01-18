@@ -1,0 +1,265 @@
+# Chronos - Smart Calendar & Productivity Application
+
+A powerful, full-featured calendar and productivity application built with Next.js, Node.js, and MongoDB. Features smooth animations, real-time updates, and unique productivity tools.
+
+## Features
+
+### Calendar Features
+- **Multiple Views**: Day, Week, and Month views with smooth transitions
+- **Event Management**: Create, edit, delete, and duplicate events
+- **Drag & Drop**: Reschedule events by dragging
+- **Recurring Events**: Daily, weekly, monthly, and yearly patterns
+- **Color Coding**: Customize event colors
+- **Multiple Calendars**: Create and manage multiple calendars
+- **Calendar Sharing**: Share calendars with other users
+
+### Task Management
+- **Todo Lists**: Create and organize tasks in custom lists
+- **Subtasks**: Break down tasks into smaller steps
+- **Priority Levels**: Low, Medium, High, and Urgent
+- **Due Dates**: Set deadlines with reminders
+- **Task to Event**: Convert todos to calendar events
+- **Progress Tracking**: Track completion status
+
+### Unique Features (Not in Google Calendar)
+
+#### 1. Focus Mode (Pomodoro Timer)
+- Built-in Pomodoro technique timer
+- Customizable session lengths (15, 25, 45, 60, 90 min)
+- Category-based focus tracking (Deep Work, Creative, Learning, etc.)
+- Streak tracking and achievements
+- Distraction logging
+
+#### 2. Productivity Analytics
+- **Productivity Score**: Daily/weekly scoring based on completed tasks, focus time, and events
+- **Time Distribution**: Visual breakdown of time spent by category
+- **Activity Heatmap**: Daily activity visualization
+- **Peak Hours Analysis**: Discover your most productive hours
+- **Trend Analysis**: Track improvement over time
+
+#### 3. Smart Scheduling
+- **Free Slot Finder**: Automatically find available time slots
+- **Working Hours**: Define and respect your working hours
+- **Smart Suggestions**: Get scheduling recommendations
+
+#### 4. Real-time Notifications
+- Browser push notifications
+- In-app notification center
+- Customizable reminder times
+- Real-time event updates via WebSocket
+
+## Tech Stack
+
+### Frontend
+- Next.js 14 (React Framework)
+- TypeScript
+- Tailwind CSS
+- Framer Motion (Animations)
+- Zustand (State Management)
+- Socket.io Client (Real-time)
+- Recharts (Analytics Charts)
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB with Mongoose
+- Socket.io (Real-time)
+- JWT Authentication
+- Node-cron (Scheduled Tasks)
+
+## Prerequisites
+
+- Node.js 18+
+- MongoDB (local or Atlas)
+- npm or yarn
+
+## Installation
+
+### 1. Clone and Setup
+
+```bash
+cd "CALENDAR APPLICATION"
+```
+
+### 2. Install Dependencies
+
+```bash
+# Install root dependencies
+npm install
+
+# Install all dependencies (backend + frontend)
+npm run install:all
+
+# OR install separately:
+cd backend && npm install
+cd ../frontend && npm install
+```
+
+### 3. Configure Environment Variables
+
+#### Backend (.env)
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/chronos_calendar
+JWT_SECRET=your_super_secret_jwt_key_here
+FRONTEND_URL=http://localhost:3000
+```
+
+#### Frontend (.env.local)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
+
+### 4. Start MongoDB
+
+Make sure MongoDB is running locally or update the MONGODB_URI with your MongoDB Atlas connection string.
+
+```bash
+# For local MongoDB
+mongod
+```
+
+### 5. Run the Application
+
+```bash
+# Run both backend and frontend
+npm run dev
+
+# OR run separately:
+# Terminal 1 - Backend
+cd backend && npm run dev
+
+# Terminal 2 - Frontend
+cd frontend && npm run dev
+```
+
+### 6. Access the Application
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000/api
+
+## Project Structure
+
+```
+CALENDAR APPLICATION/
+├── backend/
+│   ├── models/          # MongoDB schemas
+│   │   ├── User.js
+│   │   ├── Event.js
+│   │   ├── Todo.js
+│   │   ├── Calendar.js
+│   │   ├── Notification.js
+│   │   └── FocusSession.js
+│   ├── routes/          # API endpoints
+│   │   ├── auth.js
+│   │   ├── events.js
+│   │   ├── todos.js
+│   │   ├── calendars.js
+│   │   ├── notifications.js
+│   │   ├── analytics.js
+│   │   └── focus.js
+│   ├── middleware/      # Auth middleware
+│   ├── services/        # Business logic
+│   └── server.js        # Entry point
+│
+├── frontend/
+│   ├── app/             # Next.js pages
+│   │   ├── page.tsx
+│   │   ├── login/
+│   │   ├── register/
+│   │   ├── calendar/
+│   │   ├── todos/
+│   │   ├── focus/
+│   │   ├── analytics/
+│   │   └── settings/
+│   ├── components/      # React components
+│   │   ├── layout/
+│   │   ├── calendar/
+│   │   ├── todos/
+│   │   └── ui/
+│   ├── lib/            # API client
+│   ├── store/          # Zustand stores
+│   └── types/          # TypeScript types
+│
+└── package.json        # Root package.json
+```
+
+## API Endpoints
+
+### Authentication
+- POST `/api/auth/register` - Register new user
+- POST `/api/auth/login` - Login user
+- GET `/api/auth/me` - Get current user
+- PUT `/api/auth/profile` - Update profile
+- PUT `/api/auth/password` - Change password
+
+### Events
+- GET `/api/events` - Get events (with date range)
+- POST `/api/events` - Create event
+- PUT `/api/events/:id` - Update event
+- DELETE `/api/events/:id` - Delete event
+- GET `/api/events/suggestions/free-slots` - Get free time slots
+
+### Todos
+- GET `/api/todos` - Get todos
+- POST `/api/todos` - Create todo
+- PUT `/api/todos/:id` - Update todo
+- DELETE `/api/todos/:id` - Delete todo
+- POST `/api/todos/:id/convert-to-event` - Convert to event
+
+### Calendars
+- GET `/api/calendars` - Get calendars
+- POST `/api/calendars` - Create calendar
+- PUT `/api/calendars/:id` - Update calendar
+- DELETE `/api/calendars/:id` - Delete calendar
+
+### Focus
+- GET `/api/focus/sessions` - Get focus sessions
+- POST `/api/focus/sessions` - Start session
+- PUT `/api/focus/sessions/:id/complete` - Complete session
+- GET `/api/focus/stats` - Get focus statistics
+
+### Analytics
+- GET `/api/analytics/overview` - Get analytics overview
+- GET `/api/analytics/productivity-score` - Get productivity score
+- GET `/api/analytics/time-distribution` - Get time distribution
+- GET `/api/analytics/daily-activity` - Get daily activity
+- GET `/api/analytics/peak-hours` - Get peak productivity hours
+
+## Screenshots
+
+### Calendar View
+- Month, Week, and Day views with event cards
+- Drag and drop rescheduling
+- Quick event creation
+
+### Todo List
+- Task organization with lists
+- Priority and due date management
+- Subtask tracking
+
+### Focus Mode
+- Pomodoro timer with categories
+- Session history
+- Streak tracking
+
+### Analytics Dashboard
+- Productivity score
+- Time distribution charts
+- Activity heatmap
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+MIT License - feel free to use this project for personal or commercial purposes.
+
+---
+
+Built with care for productivity enthusiasts.
