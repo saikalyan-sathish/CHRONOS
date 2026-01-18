@@ -28,11 +28,9 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--background-start-rgb)),
-    rgb(var(--background-end-rgb))
-  );
+  background: linear-gradient(to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb)));
   min-height: 100vh;
 }
 
@@ -162,7 +160,7 @@ body {
   font-weight: bold;
 }
 
-.rbc-date-cell > a {
+.rbc-date-cell>a {
   color: inherit;
 }
 
@@ -176,6 +174,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -184,6 +183,7 @@ body {
 
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   .animate-in,
   .rbc-event,
   * {
@@ -265,6 +265,7 @@ body {
   .glass {
     @apply bg-white/95;
   }
+
   .dark .glass {
     @apply bg-dark-800/95;
   }
@@ -358,23 +359,19 @@ body {
 
 /* Shimmer loading effect */
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
-  );
+  background: linear-gradient(90deg,
+      #f0f0f0 25%,
+      #e0e0e0 50%,
+      #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
 .dark .shimmer {
-  background: linear-gradient(
-    90deg,
-    #334155 25%,
-    #475569 50%,
-    #334155 75%
-  );
+  background: linear-gradient(90deg,
+      #334155 25%,
+      #475569 50%,
+      #334155 75%);
   background-size: 200% 100%;
 }
 
@@ -404,4 +401,190 @@ body {
 
 .drag-over {
   @apply ring-2 ring-primary-500 ring-offset-2;
+}
+
+/* ===========================================
+   MOBILE RESPONSIVE STYLES
+   =========================================== */
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+
+  .btn,
+  button,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Larger touch targets for inputs */
+  .input,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 16px;
+    /* Prevents zoom on iOS */
+  }
+
+  /* Modal responsiveness */
+  [role="dialog"]>div>div {
+    max-height: 90vh;
+    margin: 1rem;
+    width: calc(100% - 2rem) !important;
+    max-width: 100% !important;
+  }
+
+  /* Sidebar handling */
+  .sidebar-mobile-overlay {
+    @apply fixed inset-0 bg-black/50 z-40;
+  }
+
+  /* Hide undo/redo toolbar on very small screens */
+  .undo-redo-toolbar {
+    @apply hidden sm:flex;
+  }
+
+  /* Calendar mobile adjustments */
+  .rbc-calendar {
+    font-size: 0.75rem;
+  }
+
+  .rbc-header {
+    padding: 8px 4px;
+    font-size: 0.75rem;
+  }
+
+  .rbc-event {
+    padding: 2px 4px !important;
+    font-size: 0.65rem !important;
+  }
+
+  .rbc-time-slot {
+    min-height: 30px;
+  }
+
+  /* Stack form elements on mobile */
+  .form-row,
+  .grid-cols-2 {
+    @apply grid-cols-1;
+  }
+
+  /* Full-width buttons on mobile */
+  .btn-group-mobile {
+    @apply flex flex-col gap-2;
+  }
+
+  .btn-group-mobile .btn {
+    @apply w-full justify-center;
+  }
+
+  /* Padding adjustments for mobile */
+  .p-6 {
+    @apply p-4;
+  }
+
+  .p-8 {
+    @apply p-4;
+  }
+
+  /* Card adjustments */
+  .card {
+    @apply rounded-xl;
+  }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+  .rbc-event {
+    font-size: 0.55rem !important;
+  }
+
+  .rbc-header {
+    font-size: 0.65rem;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar-collapsed .main-content {
+    margin-left: 80px;
+  }
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}
+
+/* Mobile navigation bar */
+.mobile-nav {
+  @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-800 border-t border-gray-200 dark:border-dark-700 z-50;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.mobile-nav-item {
+  @apply flex flex-col items-center justify-center py-2 px-4 text-xs text-gray-600 dark:text-gray-400;
+}
+
+.mobile-nav-item.active {
+  @apply text-primary-600 dark:text-primary-400;
+}
+
+.mobile-nav-item svg {
+  @apply w-6 h-6 mb-1;
+}
+
+/* Swipe gesture hints */
+.swipe-hint {
+  @apply hidden;
+}
+
+@media (pointer: coarse) {
+  .swipe-hint {
+    @apply block text-xs text-gray-400 text-center py-2;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  [role="dialog"]>div>div {
+    max-height: 80vh;
+  }
+
+  .modal-content {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .sidebar,
+  .mobile-nav,
+  .undo-redo-toolbar {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
 }
