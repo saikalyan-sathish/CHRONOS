@@ -87,9 +87,8 @@ export default function Sidebar() {
           width: sidebarOpen ? 280 : 80,
           x: 0,
         }}
-        className={`fixed left-0 top-0 h-full bg-white dark:bg-dark-800 border-r border-gray-200 dark:border-dark-700 z-50 flex flex-col transition-all duration-300 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed left-0 top-0 h-full bg-white dark:bg-dark-800 border-r border-gray-200 dark:border-dark-700 z-50 flex-col transition-all duration-300 hidden lg:flex ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
       >
         {/* Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-dark-700">
@@ -141,16 +140,14 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${
-                  isActive
+                className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${isActive
                     ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700'
-                }`}
+                  }`}
               >
                 <item.icon
-                  className={`w-6 h-6 flex-shrink-0 transition-transform group-hover:scale-110 ${
-                    isActive ? 'text-primary-600 dark:text-primary-400' : ''
-                  }`}
+                  className={`w-6 h-6 flex-shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-primary-600 dark:text-primary-400' : ''
+                    }`}
                 />
                 <AnimatePresence>
                   {sidebarOpen && (

@@ -10,6 +10,8 @@ import { useAuthStore, useUIStore, useNotificationStore, useCalendarStore, useFo
 import { notificationsAPI, focusAPI } from '@/lib/api';
 import { useUndoRedo } from '@/hooks/useUndoRedo';
 import { ArrowUturnLeftIcon, ArrowUturnRightIcon } from '@heroicons/react/24/outline';
+import MobileNavigation from './MobileNavigation';
+import EventModal from '../calendar/EventModal';
 
 let socket: Socket | null = null;
 
@@ -20,7 +22,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const { isAuthenticated, user, token } = useAuthStore();
-  const { sidebarOpen } = useUIStore();
+  const { sidebarOpen, eventModalOpen, setEventModalOpen } = useUIStore();
   const { setNotifications, setUnreadCount, addNotification } = useNotificationStore();
   const { addEvent, updateEvent, removeEvent } = useCalendarStore();
   const { setActiveSession } = useFocusStore();
@@ -138,18 +140,20 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900">
       <Sidebar />
+      <MobileNavigation onAddClick={() => setEventModalOpen(true)} />
+
       <main
-        className={`transition-all duration-300 min-h-screen ${sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[80px]'
+        className={`transition-all duration-300 min-h-screen pb-20 lg:pb-0 ${sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[80px]'
           }`}
       >
         {/* Undo/Redo Toolbar */}
-        <div className="fixed top-4 right-4 z-40 flex items-center gap-1 bg-white dark:bg-dark-800 rounded-lg shadow-lg p-1">
+        <div className="fixed top-4 right-4 z-40 undo-redo-toolbar flex items-center gap-1 bg-white dark:bg-dark-800 rounded-lg shadow-lg p-1">
           <button
             onClick={executeUndo}
             disabled={!canUndo}
             className={`p-2 rounded-lg transition-all ${canUndo
-                ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
-                : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
+              : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
             title={undoDescription ? `Undo: ${undoDescription}` : 'Undo (Ctrl+Z)'}
             aria-label="Undo"
@@ -160,8 +164,8 @@ export default function DashboardLayout({
             onClick={executeRedo}
             disabled={!canRedo}
             className={`p-2 rounded-lg transition-all ${canRedo
-                ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
-                : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
+              : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
             title={redoDescription ? `Redo: ${redoDescription}` : 'Redo (Ctrl+Shift+Z)'}
             aria-label="Redo"
@@ -174,11 +178,18 @@ export default function DashboardLayout({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="p-6"
+          className="p-6 pb-24 lg:pb-6"
         >
           {children}
         </motion.div>
       </main>
+
+      {/* Global Event Modal */}
+      <EventModal
+        isOpen={eventModalOpen}
+        onClose={() => setEventModalOpen(false)}
+        onSave={() => setEventModalOpen(false)}
+      />
     </div>
   );
 }

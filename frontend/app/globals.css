@@ -427,12 +427,45 @@ body {
     /* Prevents zoom on iOS */
   }
 
-  /* Modal responsiveness */
+  /* Modal responsiveness - Bottom Sheet Style */
+  [role="dialog"] .fixed.inset-0.overflow-y-auto {
+    padding: 0;
+    display: flex;
+    align-items: flex-end;
+  }
+
   [role="dialog"]>div>div {
-    max-height: 90vh;
-    margin: 1rem;
-    width: calc(100% - 2rem) !important;
+    max-height: 85vh;
+    margin: 0;
+    width: 100% !important;
     max-width: 100% !important;
+    border-radius: 20px 20px 0 0;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    position: relative;
+    /* Slide up animation is handled by Headless UI transition classes, 
+       but we force positioning here */
+  }
+
+  /* Drag handle for bottom sheet */
+  [role="dialog"]>div>div::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background-color: #e2e8f0;
+    border-radius: 2px;
+  }
+
+  .dark [role="dialog"]>div>div::after {
+    background-color: #475569;
+  }
+
+  /* Adjust modal header for drag handle */
+  [role="dialog"] h3 {
+    padding-top: 12px;
   }
 
   /* Sidebar handling */
@@ -521,6 +554,10 @@ body {
 }
 
 /* Safe area for notched phones */
+.pb-safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
 @supports (padding: max(0px)) {
   .safe-area-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
