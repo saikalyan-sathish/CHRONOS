@@ -11,6 +11,7 @@ import { notificationsAPI, focusAPI } from '@/lib/api';
 import { useUndoRedo } from '@/hooks/useUndoRedo';
 import { ArrowUturnLeftIcon, ArrowUturnRightIcon } from '@heroicons/react/24/outline';
 import MobileNavigation from './MobileNavigation';
+import Background from './Background';
 import EventModal from '../calendar/EventModal';
 
 let socket: Socket | null = null;
@@ -138,7 +139,8 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-900">
+    <div className="min-h-screen relative text-gray-900 dark:text-gray-100">
+      <Background />
       <Sidebar />
       <MobileNavigation onAddClick={() => setEventModalOpen(true)} />
 
