@@ -32,7 +32,7 @@ export default function MobileNavigation({ onAddClick }: MobileNavigationProps) 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pb-safe-bottom">
             {/* Glassmorphism Background */}
-            <div className="absolute inset-0 bg-white/80 dark:bg-dark-900/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 shadow-lg-up" />
+            <div className="absolute inset-0 glass-nav" />
 
             <div className="relative flex justify-around items-center h-16 px-2">
                 {navigation.map((item) => {

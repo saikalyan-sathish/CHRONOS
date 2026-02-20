@@ -311,9 +311,9 @@ export default function AnalyticsPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="h-3 bg-gray-100 dark:bg-dark-700 rounded-full overflow-hidden">
+                  <div className="h-3 bg-white/30 dark:bg-dark-700/50 backdrop-blur-sm rounded-full overflow-hidden border border-white/20 dark:border-white/5">
                     <motion.div
-                      className="h-full rounded-full"
+                      className="h-full rounded-full shadow-inner"
                       style={{ backgroundColor: categoryColors[item.category] || '#6B7280' }}
                       initial={{ width: 0 }}
                       animate={{ width: `${item.percentage}%` }}
@@ -345,7 +345,7 @@ export default function AnalyticsPage() {
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.01 }}
-                  className="aspect-square rounded-md cursor-pointer relative group"
+                  className="aspect-square rounded-lg cursor-pointer relative group backdrop-blur-sm border border-white/10"
                   style={{
                     backgroundColor: `rgba(59, 130, 246, ${0.1 + intensity * 0.9})`,
                   }}

@@ -3,9 +3,17 @@ const Todo = require('../models/Todo');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
 
+const mongoose = require('mongoose');
+
 // Check for upcoming events and send notifications
 const checkUpcomingEvents = async (io) => {
   try {
+    // If mongoose isn't connected yet, don't try to query
+    if (mongoose.connection.readyState !== 1) {
+      console.log('Skipping notification check: MongoDB not connected');
+      return;
+    }
+
     const now = new Date();
 
     // Find events with unsent reminders

@@ -82,6 +82,10 @@ const config: Config = {
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
         'glow': '0 0 15px rgba(59, 130, 246, 0.5)',
         'glow-lg': '0 0 30px rgba(59, 130, 246, 0.6)',
+        'lg-up': '0 -10px 25px -5px rgba(0, 0, 0, 0.1), 0 -8px 10px -6px rgba(0, 0, 0, 0.1)',
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+        'glass-lg': '0 8px 32px 0 rgba(31, 38, 135, 0.25)',
+        'inner-glow': 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.1)',
       },
       backdropBlur: {
         xs: '2px',

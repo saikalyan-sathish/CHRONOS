@@ -6,12 +6,16 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 249, 250, 251;
   --background-end-rgb: 255, 255, 255;
+  --toast-bg: #ffffff;
+  --toast-color: #1f2937;
 }
 
 .dark {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 15, 23, 42;
   --background-end-rgb: 30, 41, 59;
+  --toast-bg: #1f2937;
+  --toast-color: #f9fafb;
 }
 
 * {
@@ -34,19 +38,61 @@ body {
 
 /* 2026 Glassmorphism Utilities */
 .glass-panel {
-  @apply bg-white/70 dark:bg-dark-800/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg ring-1 ring-black/5;
+  @apply bg-white/70 dark:bg-dark-800/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-glass ring-1 ring-black/5;
 }
 
 .glass-card {
-  @apply bg-white/60 dark:bg-dark-800/50 backdrop-blur-md border border-white/20 dark:border-white/5 transition-all duration-300 hover:bg-white/80 dark:hover:bg-dark-800/70 hover:shadow-xl hover:scale-[1.02];
+  @apply bg-white/60 dark:bg-dark-800/50 backdrop-blur-md border border-white/20 dark:border-white/5 transition-all duration-300 hover:bg-white/80 dark:hover:bg-dark-800/70 hover:shadow-glass-lg hover:scale-[1.01];
+}
+
+.glass-card-static {
+  @apply bg-white/60 dark:bg-dark-800/50 backdrop-blur-md border border-white/20 dark:border-white/5 shadow-glass;
 }
 
 .glass-button {
   @apply bg-white/20 hover:bg-white/30 dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm border border-white/10 transition-all active:scale-95;
 }
 
+.glass-sidebar {
+  @apply bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl border-r border-white/20 dark:border-white/5 shadow-glass;
+}
+
+.glass-nav {
+  @apply bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl border-t border-white/20 dark:border-white/5 shadow-lg-up;
+}
+
+.glass-modal {
+  @apply bg-white/90 dark:bg-dark-800/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-glass-lg;
+}
+
+.glass-input {
+  @apply bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm border border-white/30 dark:border-white/10 focus:border-primary-400/50 focus:ring-2 focus:ring-primary-400/20;
+}
+
+.glass-stats {
+  @apply bg-gradient-to-br from-white/80 to-white/40 dark:from-dark-800/80 dark:to-dark-800/40 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-glass;
+}
+
 .glow-text {
   text-shadow: 0 0 20px rgba(var(--primary-500-rgb), 0.5);
+}
+
+/* Gradient border effect for glassmorphism */
+.glass-border-gradient {
+  position: relative;
+}
+
+.glass-border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.4) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Scrollbar styling - Chrome, Safari, Edge */
@@ -255,17 +301,17 @@ body {
   @apply bg-dark-800 border-dark-600 text-dark-100 placeholder-dark-400;
 }
 
-/* Card styles */
+/* Card styles - Glassmorphism */
 .card {
-  @apply bg-white rounded-xl shadow-soft p-6 transition-shadow duration-200;
+  @apply bg-white/70 dark:bg-dark-800/60 backdrop-blur-xl rounded-2xl shadow-glass p-6 transition-all duration-300 border border-white/20 dark:border-white/5;
 }
 
-.dark .card {
-  @apply bg-dark-800 shadow-lg;
+.card:hover {
+  @apply shadow-glass-lg bg-white/80 dark:bg-dark-800/70;
 }
 
 .card-hover:hover {
-  @apply shadow-lg;
+  @apply shadow-glass-lg scale-[1.01];
 }
 
 /* Glass effect - with Firefox optimization */

@@ -69,74 +69,88 @@ A powerful, full-featured calendar and productivity application built with Next.
 
 ## Prerequisites
 
-- Node.js 18+
-- MongoDB (local or Atlas)
-- npm or yarn
+- [Docker](https://www.docker.com/products/docker-desktop/) installed and running
 
-## Installation
+> **Note:** You do **not** need Node.js or MongoDB installed locally. Everything runs inside Docker containers.
 
-### 1. Clone and Setup
+## Getting Started
 
-```bash
-cd "CALENDAR APPLICATION"
-```
-
-### 2. Install Dependencies
+### 1. Clone the Repository
 
 ```bash
-# Install root dependencies
-npm install
-
-# Install all dependencies (backend + frontend)
-npm run install:all
-
-# OR install separately:
-cd backend && npm install
-cd ../frontend && npm install
+git clone https://github.com/your-username/CHRONOS.git
+cd CHRONOS
 ```
 
-### 3. Configure Environment Variables
-
-#### Backend (.env)
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/chronos_calendar
-JWT_SECRET=your_super_secret_jwt_key_here
-FRONTEND_URL=http://localhost:3000
-```
-
-#### Frontend (.env.local)
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
-
-### 4. Start MongoDB
-
-Make sure MongoDB is running locally or update the MONGODB_URI with your MongoDB Atlas connection string.
+### 2. Start the Application
 
 ```bash
-# For local MongoDB
-mongod
+docker-compose up --build -d
 ```
 
-### 5. Run the Application
+This single command will:
+- Pull and start a **MongoDB** container (data persisted in a Docker volume)
+- Build and start the **Backend** (Express.js API on port 5000)
+- Build and start the **Frontend** (Next.js on port 3000)
+
+### 3. Access the Application
+
+| Service  | URL                          |
+|----------|------------------------------|
+| Frontend | http://localhost:3000         |
+| Backend  | http://localhost:5000/api     |
+| MongoDB  | `mongodb://localhost:27017`   |
+
+### 4. View Logs
 
 ```bash
-# Run both backend and frontend
-npm run dev
+# All services
+docker-compose logs -f
 
-# OR run separately:
-# Terminal 1 - Backend
-cd backend && npm run dev
-
-# Terminal 2 - Frontend
-cd frontend && npm run dev
+# Specific service
+docker-compose logs -f backend
 ```
 
-### 6. Access the Application
+### 5. Update or Restart the Application
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000/api
+To apply code changes or restart services without removing them:
+```bash
+docker-compose up -d --build
+```
+
+### 6. Stop the Application
+
+```bash
+# Stop containers (preserves container state and data)
+docker-compose stop
+
+# Stop and REMOVE containers/networks (cleanup)
+docker-compose down
+```
+
+### Connecting to MongoDB via Compass
+
+Since port `27017` is mapped to your host, you can connect using [MongoDB Compass](https://www.mongodb.com/products/compass) with:
+
+```
+mongodb://localhost:27017
+```
+
+The database `chronos_calendar` will appear once the backend starts writing data.
+
+> **Important:** The MongoDB data lives inside a Docker volume (`chronos_data`), not on your local filesystem. It is isolated to this project and won't conflict with other MongoDB installations or projects.
+
+## Environment Variables
+
+All environment variables are pre-configured in `docker-compose.yml`. You do **not** need to create `.env` files for Docker usage.
+
+| Variable             | Service  | Default Value                                      |
+|----------------------|----------|----------------------------------------------------|
+| `PORT`               | Backend  | `5000`                                             |
+| `MONGODB_URI`        | Backend  | `mongodb://chronos_mongodb:27017/chronos_calendar` |
+| `FRONTEND_URL`       | Backend  | `http://localhost:3000`                             |
+| `JWT_SECRET`         | Backend  | `your-super-secret-jwt-key-change-in-production`   |
+| `NEXT_PUBLIC_API_URL`| Frontend | `http://localhost:5000/api`                         |
 
 ## Project Structure
 

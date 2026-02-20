@@ -25,12 +25,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <>
       {children}
       <Toaster
-        position="top-right"
+        position="top-center"
+        containerStyle={{
+          zIndex: 99999,
+        }}
         toastOptions={{
           duration: 4000,
           style: {
             background: 'var(--toast-bg)',
             color: 'var(--toast-color)',
+            zIndex: 99999,
           },
           className: 'dark:bg-dark-800 dark:text-white',
           success: {

@@ -9,7 +9,7 @@ import Sidebar from './Sidebar';
 import { useAuthStore, useUIStore, useNotificationStore, useCalendarStore, useFocusStore } from '@/store/useStore';
 import { notificationsAPI, focusAPI } from '@/lib/api';
 import { useUndoRedo } from '@/hooks/useUndoRedo';
-import { ArrowUturnLeftIcon, ArrowUturnRightIcon } from '@heroicons/react/24/outline';
+import { ArrowUturnLeftIcon, ArrowUturnRightIcon, Bars3Icon } from '@heroicons/react/24/outline';
 import MobileNavigation from './MobileNavigation';
 import Background from './Background';
 import EventModal from '../calendar/EventModal';
@@ -23,7 +23,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const { isAuthenticated, user, token } = useAuthStore();
-  const { sidebarOpen, eventModalOpen, setEventModalOpen } = useUIStore();
+  const { sidebarOpen, setSidebarOpen, eventModalOpen, setEventModalOpen } = useUIStore();
   const { setNotifications, setUnreadCount, addNotification } = useNotificationStore();
   const { addEvent, updateEvent, removeEvent } = useCalendarStore();
   const { setActiveSession } = useFocusStore();
@@ -148,13 +148,24 @@ export default function DashboardLayout({
         className={`transition-all duration-300 min-h-screen pb-20 lg:pb-0 ${sidebarOpen ? 'lg:ml-[280px]' : 'lg:ml-[80px]'
           }`}
       >
-        {/* Undo/Redo Toolbar */}
-        <div className="fixed top-4 right-4 z-40 undo-redo-toolbar flex items-center gap-1 bg-white dark:bg-dark-800 rounded-lg shadow-lg p-1">
+        {/* Mobile Header with Hamburger */}
+        <div className="fixed top-4 left-4 z-40 lg:hidden">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-3 rounded-xl bg-white/70 dark:bg-dark-800/70 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-glass hover:bg-white/90 dark:hover:bg-dark-800/90 transition-all"
+            aria-label="Toggle menu"
+          >
+            <Bars3Icon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+          </button>
+        </div>
+
+        {/* Undo/Redo Toolbar - Hidden on mobile, positioned at bottom right on desktop to avoid overlap */}
+        <div className="hidden lg:flex fixed bottom-6 right-6 z-40 undo-redo-toolbar items-center gap-1 bg-white/70 dark:bg-dark-800/70 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-xl shadow-glass p-1">
           <button
             onClick={executeUndo}
             disabled={!canUndo}
             className={`p-2 rounded-lg transition-all ${canUndo
-              ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
+              ? 'hover:bg-white/50 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'
               : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
             title={undoDescription ? `Undo: ${undoDescription}` : 'Undo (Ctrl+Z)'}
@@ -166,7 +177,7 @@ export default function DashboardLayout({
             onClick={executeRedo}
             disabled={!canRedo}
             className={`p-2 rounded-lg transition-all ${canRedo
-              ? 'hover:bg-gray-100 dark:hover:bg-dark-700 text-gray-700 dark:text-gray-300'
+              ? 'hover:bg-white/50 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'
               : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
               }`}
             title={redoDescription ? `Redo: ${redoDescription}` : 'Redo (Ctrl+Shift+Z)'}

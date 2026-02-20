@@ -105,9 +105,16 @@ export default function TemplateManager({
         return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
     };
 
+    // Handle backdrop click - only close if explicitly clicking the backdrop
+    const handleBackdropClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
+
     return (
         <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-50" onClose={onClose}>
+            <Dialog as="div" className="relative z-50" onClose={() => {}} static>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -117,11 +124,11 @@ export default function TemplateManager({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleBackdropClick} />
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4">
+                    <div className="flex min-h-full items-center justify-center p-4" onClick={handleBackdropClick}>
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -131,9 +138,9 @@ export default function TemplateManager({
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-dark-800 shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white/90 dark:bg-dark-800/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-glass-lg transition-all" onClick={(e) => e.stopPropagation()}>
                                 {/* Header */}
-                                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-dark-700">
+                                <div className="flex items-center justify-between p-6 border-b border-white/10 dark:border-white/5 bg-white/30 dark:bg-white/5">
                                     <div>
                                         <Dialog.Title className="text-xl font-semibold text-gray-900 dark:text-white">
                                             Event Templates
@@ -152,7 +159,7 @@ export default function TemplateManager({
                                 </div>
 
                                 {/* Search and Sort */}
-                                <div className="p-4 border-b border-gray-200 dark:border-dark-700 space-y-3">
+                                <div className="p-4 border-b border-white/10 dark:border-white/5 space-y-3">
                                     <input
                                         type="text"
                                         placeholder="Search templates..."
@@ -265,7 +272,7 @@ export default function TemplateManager({
                                 </div>
 
                                 {/* Footer */}
-                                <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-dark-700 bg-gray-50 dark:bg-dark-900/50">
+                                <div className="flex items-center justify-between p-4 border-t border-white/10 dark:border-white/5 bg-white/30 dark:bg-white/5">
                                     <span className="text-sm text-gray-500 dark:text-gray-400">
                                         {templates.length} template{templates.length !== 1 ? 's' : ''}
                                     </span>

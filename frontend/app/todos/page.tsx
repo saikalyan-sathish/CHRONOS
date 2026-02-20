@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
   PlusIcon,
@@ -38,11 +39,22 @@ const statusFilters = [
 export default function TodosPage() {
   const { todos, setTodos, updateTodo, removeTodo, selectedTodo, setSelectedTodo, currentList, setCurrentList } = useTodoStore();
   const { todoModalOpen, setTodoModalOpen } = useUIStore();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [lists, setLists] = useState<string[]>(['inbox']);
   const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0, overdue: 0 });
+
+  useEffect(() => {
+    // Check for "Convert to Todo" params from Sticky Notes
+    const title = searchParams.get('title');
+    const description = searchParams.get('description');
+    if (title && !todoModalOpen) {
+      setSelectedTodo({ title, description, priority: 'medium', status: 'pending', list: 'inbox', subtasks: [] } as unknown as Todo);
+      setTodoModalOpen(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     loadTodos();
@@ -202,11 +214,10 @@ export default function TodosPage() {
               <button
                 key={filter.value}
                 onClick={() => setStatusFilter(filter.value)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-                  statusFilter === filter.value
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${statusFilter === filter.value
+                    ? 'bg-primary-600 text-white shadow-glow'
+                    : 'bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-dark-600/70 border border-white/20 dark:border-white/5'
+                  }`}
               >
                 {filter.label}
               </button>
@@ -222,11 +233,10 @@ export default function TodosPage() {
               <button
                 key={list}
                 onClick={() => setCurrentList(list)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                  currentList === list
-                    ? 'bg-white dark:bg-dark-800 shadow-soft text-primary-600 dark:text-primary-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-dark-800'
-                }`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${currentList === list
+                    ? 'bg-white/70 dark:bg-dark-800/70 backdrop-blur-xl shadow-glass text-primary-600 dark:text-primary-400 border border-white/20 dark:border-white/5'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-dark-800/50 backdrop-blur-sm'
+                  }`}
               >
                 {list === 'all' ? 'All Lists' : list.charAt(0).toUpperCase() + list.slice(1)}
               </button>
@@ -279,9 +289,8 @@ export default function TodosPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -100 }}
                         transition={{ delay: index * 0.05 }}
-                        className={`card p-4 group hover:shadow-lg transition-all ${
-                          todo.status === 'completed' ? 'opacity-60' : ''
-                        }`}
+                        className={`card p-4 group hover:shadow-lg transition-all ${todo.status === 'completed' ? 'opacity-60' : ''
+                          }`}
                       >
                         <div className="flex items-start gap-4">
                           {/* Checkbox */}
@@ -289,11 +298,10 @@ export default function TodosPage() {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => handleToggleComplete(todo)}
-                            className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                              todo.status === 'completed'
+                            className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${todo.status === 'completed'
                                 ? 'bg-green-500 border-green-500 text-white'
                                 : 'border-gray-300 dark:border-gray-600 hover:border-green-500'
-                            }`}
+                              }`}
                           >
                             {todo.status === 'completed' && (
                               <motion.svg
@@ -318,9 +326,8 @@ export default function TodosPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <h4
-                                className={`font-medium text-gray-900 dark:text-white ${
-                                  todo.status === 'completed' ? 'line-through text-gray-400' : ''
-                                }`}
+                                className={`font-medium text-gray-900 dark:text-white ${todo.status === 'completed' ? 'line-through text-gray-400' : ''
+                                  }`}
                               >
                                 {todo.title}
                               </h4>
@@ -349,9 +356,8 @@ export default function TodosPage() {
                             <div className="flex flex-wrap items-center gap-2 mt-3">
                               {/* Priority badge */}
                               <span
-                                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                  priorityColors[todo.priority]
-                                }`}
+                                className={`px-2 py-0.5 rounded-full text-xs font-medium ${priorityColors[todo.priority]
+                                  }`}
                               >
                                 {todo.priority}
                               </span>
@@ -384,16 +390,14 @@ export default function TodosPage() {
                             {todo.subtasks.slice(0, 3).map((subtask, idx) => (
                               <div
                                 key={idx}
-                                className={`flex items-center gap-2 text-sm ${
-                                  subtask.completed ? 'text-gray-400 line-through' : 'text-gray-600 dark:text-gray-400'
-                                }`}
+                                className={`flex items-center gap-2 text-sm ${subtask.completed ? 'text-gray-400 line-through' : 'text-gray-600 dark:text-gray-400'
+                                  }`}
                               >
                                 <div
-                                  className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                                    subtask.completed
+                                  className={`w-4 h-4 rounded-full border flex items-center justify-center ${subtask.completed
                                       ? 'bg-green-500 border-green-500'
                                       : 'border-gray-300 dark:border-gray-600'
-                                  }`}
+                                    }`}
                                 >
                                   {subtask.completed && (
                                     <svg

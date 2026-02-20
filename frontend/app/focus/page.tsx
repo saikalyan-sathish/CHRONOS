@@ -154,7 +154,7 @@ export default function FocusPage() {
 
     // Play completion sound
     if (audioRef.current) {
-      audioRef.current.play().catch(() => {});
+      audioRef.current.play().catch(() => { });
     }
 
     if (activeSession) {
@@ -314,11 +314,10 @@ export default function FocusPage() {
                   <button
                     key={d.value}
                     onClick={() => setSelectedDuration(d.value)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                      selectedDuration === d.value
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
-                    }`}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedDuration === d.value
+                        ? 'bg-primary-600 text-white shadow-glow'
+                        : 'bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-dark-600/70 border border-white/20 dark:border-white/5'
+                      }`}
                   >
                     {d.label}
                   </button>
@@ -331,15 +330,14 @@ export default function FocusPage() {
                   <button
                     key={cat.value}
                     onClick={() => setSelectedCategory(cat.value)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                      selectedCategory === cat.value
-                        ? 'ring-2 ring-offset-2 dark:ring-offset-dark-800'
-                        : 'bg-gray-100 dark:bg-dark-700'
-                    }`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all backdrop-blur-sm border ${selectedCategory === cat.value
+                        ? 'ring-2 ring-offset-2 dark:ring-offset-dark-800 border-white/30'
+                        : 'bg-white/50 dark:bg-dark-700/50 border-white/20 dark:border-white/5 text-gray-600 dark:text-gray-400'
+                      }`}
                     style={{
                       backgroundColor: selectedCategory === cat.value ? `${cat.color}20` : undefined,
                       color: selectedCategory === cat.value ? cat.color : undefined,
-                      ringColor: selectedCategory === cat.value ? cat.color : undefined,
+                      ['--tw-ring-color' as string]: selectedCategory === cat.value ? cat.color : undefined,
                     }}
                   >
                     <span>{cat.icon}</span>
@@ -423,7 +421,7 @@ export default function FocusPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-700 rounded-xl"
+                    className="flex items-center justify-between p-4 bg-white/40 dark:bg-dark-700/40 backdrop-blur-sm rounded-xl border border-white/20 dark:border-white/5"
                   >
                     <div className="flex items-center gap-4">
                       <div
@@ -446,13 +444,12 @@ export default function FocusPage() {
                         {session.actualDuration || session.plannedDuration} min
                       </p>
                       <p
-                        className={`text-sm ${
-                          session.status === 'completed'
+                        className={`text-sm ${session.status === 'completed'
                             ? 'text-green-600 dark:text-green-400'
                             : session.status === 'interrupted'
-                            ? 'text-yellow-600 dark:text-yellow-400'
-                            : 'text-gray-500'
-                        }`}
+                              ? 'text-yellow-600 dark:text-yellow-400'
+                              : 'text-gray-500'
+                          }`}
                       >
                         {session.status}
                       </p>

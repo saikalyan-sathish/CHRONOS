@@ -149,9 +149,16 @@ export default function TodoModal({ isOpen, onClose, todo, onSave }: TodoModalPr
     }
   };
 
+  // Handle backdrop click - only close if explicitly clicking the backdrop
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={onClose}>
+      <Dialog as="div" className="relative z-50" onClose={() => {}} static>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -161,11 +168,11 @@ export default function TodoModal({ isOpen, onClose, todo, onSave }: TodoModalPr
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleBackdropClick} />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
+          <div className="flex min-h-full items-center justify-center p-4" onClick={handleBackdropClick}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -175,9 +182,9 @@ export default function TodoModal({ isOpen, onClose, todo, onSave }: TodoModalPr
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-dark-800 shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white/90 dark:bg-dark-800/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-glass-lg transition-all" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-dark-700">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 dark:border-white/5 bg-white/30 dark:bg-white/5">
                   <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
                     {todo ? 'Edit Task' : 'New Task'}
                   </Dialog.Title>
@@ -231,10 +238,10 @@ export default function TodoModal({ isOpen, onClose, todo, onSave }: TodoModalPr
                           key={p.value}
                           type="button"
                           onClick={() => setPriority(p.value)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all backdrop-blur-sm border ${
                             priority === p.value
-                              ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                              : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
+                              ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
+                              : 'bg-white/50 dark:bg-dark-700/50 text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-dark-600/70 border-white/20 dark:border-white/5'
                           }`}
                         >
                           <span className={`w-2 h-2 rounded-full ${p.color}`} />
@@ -255,7 +262,7 @@ export default function TodoModal({ isOpen, onClose, todo, onSave }: TodoModalPr
                           key={qd.label}
                           type="button"
                           onClick={() => setDueDate(qd.getValue())}
-                          className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600 transition-colors"
+                          className="px-3 py-1.5 text-sm rounded-lg bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-dark-600/70 border border-white/20 dark:border-white/5 transition-all"
                         >
                           {qd.label}
                         </button>
@@ -339,7 +346,7 @@ export default function TodoModal({ isOpen, onClose, todo, onSave }: TodoModalPr
                       {subtasks.map((subtask, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-dark-700 rounded-lg"
+                          className="flex items-center gap-2 p-2 bg-white/40 dark:bg-dark-700/40 backdrop-blur-sm rounded-lg border border-white/20 dark:border-white/5"
                         >
                           <span className="flex-1 text-sm text-gray-700 dark:text-gray-300">
                             {subtask.title}

@@ -213,11 +213,10 @@ export default function SettingsPage() {
                 <button
                   key={option.value}
                   onClick={() => setTheme(option.value as any)}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all ${
-                    theme === option.value
-                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 ring-2 ring-primary-500'
-                      : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-600'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all backdrop-blur-sm border ${theme === option.value
+                      ? 'bg-primary-100/70 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 ring-2 ring-primary-500 border-primary-200 dark:border-primary-800'
+                      : 'bg-white/50 dark:bg-dark-700/50 text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-dark-600/70 border-white/20 dark:border-white/5'
+                    }`}
                 >
                   <span className="text-xl">{option.icon}</span>
                   <span className="font-medium">{option.label}</span>
@@ -249,7 +248,7 @@ export default function SettingsPage() {
                 </label>
                 <select
                   value={defaultView}
-                  onChange={(e) => setDefaultView(e.target.value)}
+                  onChange={(e) => setDefaultView(e.target.value as any)}
                   className="input"
                 >
                   {viewOptions.map((option) => (
@@ -340,14 +339,12 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => setEmailNotifications(!emailNotifications)}
-                className={`relative w-12 h-6 rounded-full transition-colors ${
-                  emailNotifications ? 'bg-primary-600' : 'bg-gray-300 dark:bg-dark-600'
-                }`}
+                className={`relative w-12 h-6 rounded-full transition-colors ${emailNotifications ? 'bg-primary-600' : 'bg-gray-300 dark:bg-dark-600'
+                  }`}
               >
                 <span
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                    emailNotifications ? 'left-7' : 'left-1'
-                  }`}
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${emailNotifications ? 'left-7' : 'left-1'
+                    }`}
                 />
               </button>
             </div>
@@ -367,14 +364,12 @@ export default function SettingsPage() {
                     setPushNotifications(false);
                   }
                 }}
-                className={`relative w-12 h-6 rounded-full transition-colors ${
-                  pushNotifications ? 'bg-primary-600' : 'bg-gray-300 dark:bg-dark-600'
-                }`}
+                className={`relative w-12 h-6 rounded-full transition-colors ${pushNotifications ? 'bg-primary-600' : 'bg-gray-300 dark:bg-dark-600'
+                  }`}
               >
                 <span
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                    pushNotifications ? 'left-7' : 'left-1'
-                  }`}
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${pushNotifications ? 'left-7' : 'left-1'
+                    }`}
                 />
               </button>
             </div>

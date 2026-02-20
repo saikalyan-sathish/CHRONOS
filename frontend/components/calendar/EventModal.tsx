@@ -88,6 +88,8 @@ export default function EventModal({
   }, []);
 
   useEffect(() => {
+    if (!isOpen) return; // Only run when modal opens
+
     if (event) {
       // Editing existing event
       setTitle(event.title);
@@ -105,16 +107,14 @@ export default function EventModal({
       setPriority(event.priority);
       setReminderTime(event.reminders?.[0]?.time || 15);
       setTags(event.tags?.join(', ') || '');
-    } else if (defaultDate) {
-      // Creating new event
-      const start = defaultDate;
+    } else {
+      // Creating new event - use defaultDate or current time
+      const start = defaultDate || new Date();
       const end = addHours(start, 1);
       setStartDate(format(start, 'yyyy-MM-dd'));
       setStartTime(format(start, 'HH:mm'));
       setEndDate(format(end, 'yyyy-MM-dd'));
       setEndTime(format(end, 'HH:mm'));
-      resetForm();
-    } else {
       resetForm();
     }
   }, [event, defaultDate, isOpen]);
@@ -143,15 +143,33 @@ export default function EventModal({
     setTags('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+
+    console.log('handleSubmit called with:', { title, startDate, endDate, startTime, endTime, calendarId });
 
     if (!title.trim()) {
+      console.log('Validation failed: No title');
       toast.error('Please enter a title');
       return;
     }
 
+    if (!startDate || !endDate) {
+      console.log('Validation failed: No dates');
+      toast.error('Please select start and end dates');
+      return;
+    }
+
+    if (!allDay && (!startTime || !endTime)) {
+      console.log('Validation failed: No times');
+      toast.error('Please select start and end times');
+      return;
+    }
+
     if (!calendarId) {
+      console.log('Validation failed: No calendar');
       toast.error('Please select a calendar');
       return;
     }
@@ -161,6 +179,15 @@ export default function EventModal({
     try {
       const start = new Date(`${startDate}T${allDay ? '00:00' : startTime}`);
       const end = new Date(`${endDate}T${allDay ? '23:59' : endTime}`);
+
+      console.log('Creating event with:', { startDate, startTime, endDate, endTime, start, end });
+
+      // Validate dates are valid
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        toast.error('Invalid date or time format');
+        setLoading(false);
+        return;
+      }
 
       if (end <= start) {
         toast.error('End time must be after start time');
@@ -182,12 +209,15 @@ export default function EventModal({
         tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
       };
 
+      console.log('Event data:', eventData);
+
       if (event) {
         const response = await eventsAPI.updateEvent(event._id, eventData);
         updateEvent(event._id, response.data.event);
         toast.success('Event updated');
       } else {
         const response = await eventsAPI.createEvent(eventData);
+        console.log('Event created response:', response.data);
         addEvent(response.data.event);
         toast.success('Event created');
       }
@@ -195,7 +225,9 @@ export default function EventModal({
       onSave?.();
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to save event');
+      console.error('Error saving event:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to save event';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -271,10 +303,17 @@ export default function EventModal({
     reminders: [reminderTime],
   });
 
+  // Handle backdrop click - only close if explicitly clicking the backdrop
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={onClose}>
+        <Dialog as="div" className="relative z-50" onClose={() => {}} static>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -284,11 +323,11 @@ export default function EventModal({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleBackdropClick} />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4">
+            <div className="flex min-h-full items-center justify-center p-4" onClick={handleBackdropClick}>
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -298,9 +337,9 @@ export default function EventModal({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-dark-800 shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white/90 dark:bg-dark-800/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-glass-lg transition-all" onClick={(e) => e.stopPropagation()}>
                   {/* Header */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-dark-700">
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 dark:border-white/5 bg-white/30 dark:bg-white/5">
                     <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
                       {event ? 'Edit Event' : 'New Event'}
                     </Dialog.Title>
@@ -537,25 +576,26 @@ export default function EventModal({
                       >
                         Cancel
                       </button>
-                      <motion.button
+                      <button
                         type="submit"
                         disabled={loading}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="btn btn-primary"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          console.log('Create Event button clicked');
+                          handleSubmit();
+                        }}
+                        className="btn btn-primary min-w-[120px] flex items-center justify-center"
                       >
                         {loading ? (
-                          <motion.div
-                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          <div
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                           />
                         ) : event ? (
                           'Update Event'
                         ) : (
                           'Create Event'
                         )}
-                      </motion.button>
+                      </button>
                     </div>
                   </form>
                 </Dialog.Panel>

@@ -146,9 +146,9 @@ export default function CalendarPage() {
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     return (
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-soft overflow-hidden">
+      <div className="bg-white/70 dark:bg-dark-800/60 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20 dark:border-white/5 overflow-hidden">
         {/* Weekday headers */}
-        <div className="grid grid-cols-7 border-b border-gray-200 dark:border-dark-700">
+        <div className="grid grid-cols-7 border-b border-white/10 dark:border-white/5 bg-white/30 dark:bg-white/5">
           {weekDays.map((day) => (
             <div
               key={day}
@@ -173,8 +173,8 @@ export default function CalendarPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.01 }}
                 onClick={() => handleDateClick(day)}
-                className={`min-h-[120px] p-2 border-b border-r border-gray-100 dark:border-dark-700 cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-dark-700 ${
-                  !isCurrentMonth ? 'bg-gray-50 dark:bg-dark-900/50' : ''
+                className={`min-h-[120px] p-2 border-b border-r border-white/10 dark:border-white/5 cursor-pointer transition-all hover:bg-white/50 dark:hover:bg-white/5 ${
+                  !isCurrentMonth ? 'bg-gray-100/30 dark:bg-dark-900/30' : ''
                 }`}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -232,15 +232,15 @@ export default function CalendarPage() {
     });
 
     return (
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-soft overflow-hidden">
+      <div className="bg-white/70 dark:bg-dark-800/60 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20 dark:border-white/5 overflow-hidden">
         {/* Header */}
-        <div className="grid grid-cols-8 border-b border-gray-200 dark:border-dark-700">
-          <div className="py-3 px-2 text-center text-sm font-semibold text-gray-400 dark:text-gray-500 border-r border-gray-200 dark:border-dark-700" />
+        <div className="grid grid-cols-8 border-b border-white/10 dark:border-white/5 bg-white/30 dark:bg-white/5">
+          <div className="py-3 px-2 text-center text-sm font-semibold text-gray-400 dark:text-gray-500 border-r border-white/10 dark:border-white/5" />
           {weekDays.map((day) => (
             <div
               key={day.toISOString()}
-              className={`py-3 text-center border-r border-gray-200 dark:border-dark-700 last:border-r-0 ${
-                isToday(day) ? 'bg-primary-50 dark:bg-primary-900/20' : ''
+              className={`py-3 text-center border-r border-white/10 dark:border-white/5 last:border-r-0 ${
+                isToday(day) ? 'bg-primary-100/50 dark:bg-primary-900/30' : ''
               }`}
             >
               <span className="text-xs text-gray-500 dark:text-gray-400 uppercase">
@@ -265,9 +265,9 @@ export default function CalendarPage() {
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="grid grid-cols-8 border-b border-gray-100 dark:border-dark-700"
+                className="grid grid-cols-8 border-b border-white/5 dark:border-white/5"
               >
-                <div className="py-4 px-2 text-xs text-gray-400 dark:text-gray-500 text-right border-r border-gray-200 dark:border-dark-700">
+                <div className="py-4 px-2 text-xs text-gray-400 dark:text-gray-500 text-right border-r border-white/10 dark:border-white/5">
                   {format(new Date().setHours(hour, 0), 'h a')}
                 </div>
                 {weekDays.map((day) => {
@@ -280,7 +280,7 @@ export default function CalendarPage() {
                         eventDate.setHours(hour, 0, 0, 0);
                         handleDateClick(eventDate);
                       }}
-                      className="relative min-h-[60px] border-r border-gray-100 dark:border-dark-700 last:border-r-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/50"
+                      className="relative min-h-[60px] border-r border-white/5 dark:border-white/5 last:border-r-0 cursor-pointer hover:bg-white/30 dark:hover:bg-white/5 transition-colors"
                     >
                       {hourEvents.map((event) => (
                         <motion.div
@@ -326,9 +326,9 @@ export default function CalendarPage() {
 
   const renderDayView = () => {
     return (
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-soft overflow-hidden">
+      <div className="bg-white/70 dark:bg-dark-800/60 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20 dark:border-white/5 overflow-hidden">
         {/* Header */}
-        <div className="py-4 px-6 border-b border-gray-200 dark:border-dark-700 text-center">
+        <div className="py-4 px-6 border-b border-white/10 dark:border-white/5 text-center bg-white/30 dark:bg-white/5">
           <p
             className={`text-2xl font-bold ${
               isToday(currentDate)
@@ -357,9 +357,9 @@ export default function CalendarPage() {
                   eventDate.setHours(hour, 0, 0, 0);
                   handleDateClick(eventDate);
                 }}
-                className="flex border-b border-gray-100 dark:border-dark-700 min-h-[80px] cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/50"
+                className="flex border-b border-white/5 dark:border-white/5 min-h-[80px] cursor-pointer hover:bg-white/30 dark:hover:bg-white/5 transition-colors"
               >
-                <div className="w-20 py-4 px-4 text-sm text-gray-400 dark:text-gray-500 text-right border-r border-gray-200 dark:border-dark-700 flex-shrink-0">
+                <div className="w-20 py-4 px-4 text-sm text-gray-400 dark:text-gray-500 text-right border-r border-white/10 dark:border-white/5 flex-shrink-0">
                   {format(new Date().setHours(hour, 0), 'h a')}
                 </div>
                 <div className="flex-1 p-2 relative">
@@ -438,15 +438,15 @@ export default function CalendarPage() {
 
           <div className="flex items-center gap-3">
             {/* View switcher */}
-            <div className="flex bg-gray-100 dark:bg-dark-700 rounded-xl p-1">
+            <div className="flex bg-white/50 dark:bg-dark-700/50 backdrop-blur-sm rounded-xl p-1 border border-white/20 dark:border-white/5">
               {viewOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => setCurrentView(option.value)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     currentView === option.value
-                      ? 'bg-white dark:bg-dark-600 text-primary-600 dark:text-primary-400 shadow-sm'
-                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-white/80 dark:bg-dark-600/80 text-primary-600 dark:text-primary-400 shadow-sm backdrop-blur-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/30 dark:hover:bg-white/5'
                   }`}
                 >
                   <option.icon className="w-4 h-4" />
@@ -482,7 +482,7 @@ export default function CalendarPage() {
             transition={{ duration: 0.2 }}
           >
             {loading ? (
-              <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-soft p-12 flex items-center justify-center">
+              <div className="bg-white/70 dark:bg-dark-800/60 backdrop-blur-xl rounded-2xl shadow-glass border border-white/20 dark:border-white/5 p-12 flex items-center justify-center">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}

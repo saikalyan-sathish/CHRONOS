@@ -198,6 +198,31 @@ export const useFocusStore = create<FocusState>((set) => ({
     })),
 }));
 
+interface AccessibilityState {
+  keyboardNavigation: boolean;
+  reducedMotion: boolean;
+  highContrast: boolean;
+  setKeyboardNavigation: (enabled: boolean) => void;
+  setReducedMotion: (enabled: boolean) => void;
+  setHighContrast: (enabled: boolean) => void;
+}
+
+export const useAccessibilityStore = create<AccessibilityState>()(
+  persist(
+    (set) => ({
+      keyboardNavigation: true,
+      reducedMotion: false,
+      highContrast: false,
+      setKeyboardNavigation: (enabled) => set({ keyboardNavigation: enabled }),
+      setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
+      setHighContrast: (enabled) => set({ highContrast: enabled }),
+    }),
+    {
+      name: 'accessibility-storage',
+    }
+  )
+);
+
 export const useUIStore = create<UIState>()(
   persist(
     (set) => ({

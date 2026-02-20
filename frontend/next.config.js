@@ -17,7 +17,7 @@ const nextConfig = {
   // Experimental features for better performance
   experimental: {
     // Optimize CSS loading
-    optimizeCss: true,
+    optimizeCss: false,
   },
   // Headers for better browser compatibility
   async headers() {

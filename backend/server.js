@@ -14,6 +14,7 @@ const notificationRoutes = require('./routes/notifications');
 const analyticsRoutes = require('./routes/analytics');
 const focusRoutes = require('./routes/focus');
 const templateRoutes = require('./routes/templates');
+const noteRoutes = require('./routes/notes');
 
 const { checkUpcomingEvents } = require('./services/notificationService');
 
@@ -22,7 +23,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
   }
 });
 
@@ -37,7 +38,7 @@ app.use(express.json());
 app.set('io', io);
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/chronos_calendar';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/chronos_calendar';
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
@@ -52,6 +53,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/focus', focusRoutes);
 app.use('/api/templates', templateRoutes);
+app.use('/api/notes', noteRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -215,4 +215,24 @@ export const templatesAPI = {
     api.post('/templates/from-event', { name, eventId }),
 };
 
+// Notes API
+export const notesAPI = {
+  getNotes: () => api.get('/notes'),
+
+  createNote: (data: {
+    title?: string;
+    content?: string;
+    color?: string;
+    coordinates?: { x: number; y: number };
+    pinnedDate?: string | null;
+  }) => api.post('/notes', data),
+
+  updateNote: (id: string, data: any) => api.put(`/notes/${id}`, data),
+
+  updateCoordinates: (id: string, coordinates: { x: number; y: number }) =>
+    api.patch(`/notes/${id}/coordinates`, { coordinates }),
+
+  deleteNote: (id: string) => api.delete(`/notes/${id}`),
+};
+
 export default api;

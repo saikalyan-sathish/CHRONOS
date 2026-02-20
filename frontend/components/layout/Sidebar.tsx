@@ -17,6 +17,7 @@ import {
   ArrowRightOnRectangleIcon,
   PlusIcon,
   BellIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore, useUIStore, useNotificationStore, useCalendarStore } from '@/store/useStore';
 import { calendarsAPI } from '@/lib/api';
@@ -24,6 +25,7 @@ import { calendarsAPI } from '@/lib/api';
 const navigation = [
   { name: 'Calendar', href: '/calendar', icon: CalendarIcon },
   { name: 'Tasks', href: '/todos', icon: CheckCircleIcon },
+  { name: 'Sticky Notes', href: '/notes', icon: DocumentTextIcon },
   { name: 'Focus', href: '/focus', icon: ClockIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
@@ -87,11 +89,11 @@ export default function Sidebar() {
           width: sidebarOpen ? 280 : 80,
           x: 0,
         }}
-        className={`fixed left-0 top-0 h-full bg-white dark:bg-dark-800 border-r border-gray-200 dark:border-dark-700 z-50 flex-col transition-all duration-300 hidden lg:flex ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed left-0 top-0 h-full glass-sidebar z-50 flex-col transition-all duration-300 ${sidebarOpen ? 'flex' : 'hidden lg:flex'
           }`}
       >
         {/* Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-dark-700">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-white/10 dark:border-white/5">
           <AnimatePresence mode="wait">
             {sidebarOpen ? (
               <motion.div
@@ -141,8 +143,8 @@ export default function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative ${isActive
-                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700'
+                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700'
                   }`}
               >
                 <item.icon
@@ -174,7 +176,7 @@ export default function Sidebar() {
 
         {/* Calendars */}
         {sidebarOpen && calendars.length > 0 && (
-          <div className="px-3 py-4 border-t border-gray-200 dark:border-dark-700">
+          <div className="px-3 py-4 border-t border-white/10 dark:border-white/5">
             <div className="flex items-center justify-between mb-3 px-3">
               <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Calendars
@@ -203,7 +205,7 @@ export default function Sidebar() {
         )}
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-200 dark:border-dark-700 space-y-2">
+        <div className="p-3 border-t border-white/10 dark:border-white/5 space-y-2">
           {/* Notifications */}
           <button className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors relative">
             <BellIcon className="w-6 h-6 flex-shrink-0" />
@@ -233,7 +235,7 @@ export default function Sidebar() {
           </button>
 
           {/* User profile */}
-          <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-gray-50 dark:bg-dark-700">
+          <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-white/30 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/5">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold flex-shrink-0">
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </div>
